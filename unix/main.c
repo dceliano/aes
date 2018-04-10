@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 
   // Library call to parse the 128-bit encryption key and IV.
   // Result is that the hex-input strings get loaded in binary 
-  // format into two 16-byte arrays - one for the IV and one for the key..
+  // format into two 16-byte arrays - one for the IV and one for the key.
   uint8_t key[16];
   if (!AES_parse_key(argv[1], key)) {
     fprintf(stderr, "Invalid key: %s\n", argv[1]);
