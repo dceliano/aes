@@ -12,7 +12,7 @@ import datetime
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('bognor.sm', 2002))
 
-print(datetime.datetime.now()) #Used to correlate power measurements with AES execution time
+print datetime.datetime.now() #Used to correlate power measurements with AES execution time
 
 t0 = time.time() #initial time measurement
 v1p = None #1V power rail measurement
@@ -31,7 +31,7 @@ while True:
     v5 = v5c - v5p
     v1p, v5p = v1c, v5c
     if v5 != 0 and v1 != 0:
-      print(time.time() - t0, ',', v5, ',',  v1)
+      print time.time() - t0, ',', v5, ',',  v1
       sys.stdout.flush()
 
   time.sleep(0.1)
