@@ -5,7 +5,7 @@ C library of AES encryption based on the tiny-C-aes library, *aes.c* and *aes.h*
 
 Usage:
 
-./aes 11223344556677889900112233445566 11223344556677889900112233445566 plaintext output.txt 
+	make run
 
 where plaintext is a file containing the plaintext you want to encrypt and output.txt is the resulting ciphertext.
 
@@ -14,10 +14,7 @@ client
 
 Performs accelerated AES encryption by talking to the FPGA accelerator over the NoC interface. Uses the same AES library as unaccelerated Unix.
 
-Make sure the correct bitfile is loaded onto the card (using MD5 checksums of the bitfile using *md5sum*), or else the card will freeze when you try to run the C code. To reset the card if it freezes, do the following:
-
-	ssh root@bognor.sm
-	parcard-djg1.reset
+Make sure the correct bitfile is loaded onto the silicon (using MD5 checksums of the bitfile using *md5sum*). Otherwise, the card will freeze when you try to run the program and you must reset it using bognor.
 
 Usage:
 
@@ -45,9 +42,19 @@ If the image was successfully loaded, typing the following should return 1:
 stats
 ======
 
-Contains code to collect power information from the Parallela card running in FN12 (parcard-djg1.sm) over Telnet.
+Contains code to collect timing and energy statistics.
 
-Also contains Python script to process text outputs and collect stats from outputs. Contains example outputs from Nandor.
+*energy.py* contains code to collect power information from the Parallela card running in FN12 (parcard-djg1.sm) over Telnet. The *energy.py* output should be piped into a file *energy_%.log* where *%* is the divisor of the ARM CPU, i.e. *energy_1.log* is for an ARM CPU of 666MHz.
+
+	./energy.py > energy_1.log
+
+The same steps should be taken for the *timing_%.log* files for running multiple trials of the ARM execution time.
+
+	make run > timing_1.log
+
+Then, run the *process.py* file, which collects stats from the outputs.
+
+This directory contains example timing and energy logs from Nandor and Dom.
 
 prazor-arm
 ======
@@ -136,21 +143,27 @@ test
 Contains test input and output files to prove that the accelerator works on all the different platforms. .bin files are the raw output file before the hexdump, and .txt files are the output after the hexdump.
 
 
-Benchmarking and Changing Frequency on the FPGA
+Benchmarking and changing frequencies
 ======
+## Silicon
+The devmem2 program (www.lartmaker.nl/lartware/port/devmem2.c) is used to read and write to the Zynq clock registers. devmem2 must be used as root. If you read and write an invalid value, you will kill the board and must reset it via bognor.
 
-To change the FPGA frequency:
+	devmem2 0xF8000120 w    // View current ARM CPU frequency
+	devmem2 0xF8000170 w    // View current FPGA frequency
+
+To change the silicon FPGA frequency (default divisor of 0xA):
 
 	devmem2 0xF8000170 w 0x100400
 
-Change the number 4 in 0x100400 to change what you divide the frequency by. The clock normally runs at 1GHz.
+Change the number 4 in 0x100400 to change what you divide the frequency by (clock normally runs at 1GHz).
 
-To change the ARM CPU frequency:
+To change the silicon ARM CPU frequency (666MHz by default):
 
-	devmem2 0xF8000120 w 0x1F000400
+	devmem2 0xF8000120 w 0x1F000200
 
-ARM normally runs at 666MHz.
+In this case, 2 is the divisor, which must not be 0, 1 or 3. A value of 2 means a CPU frequency of 666MHz. See Zynq manual page 1583 for more info.
 
+## Prazor
 To measure reads:
 
 	./kiwi-ksubs3/kiwi-ksubs3-server/ksubs3.1-server -pio-performance -1000000
@@ -161,7 +174,11 @@ To measure writes:
 
 where kiwi-ksubs3 is the repo originally at https://bitbucket.org/djg11/kiwi-ksubs3.git and now on Nandor's parcard account.
 
-Other changes
-=======
+To change Prazor Zynq frequency, use command line argument. Must change src/vhls.cpp file (~line 235) to be able to do this.
 
-change src/vhls.cpp to make the changes for the Prazor command line argument to change the Zynq frequency (~line 235).
+To reset the parcard
+======
+Log into bognor.sm and type the following as root:
+
+	parcard-djg1.reset
+

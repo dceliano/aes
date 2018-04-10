@@ -1,5 +1,5 @@
 #
-# Based on Makefile for Hello World - most simple program possible.
+# Based on Makefile for Hello World
 #
 
 
