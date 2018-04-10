@@ -16,7 +16,7 @@ aes.o: ../unix/aes.c
 	$(CC) $(CFLAGS) -c ../unix/aes.c -o aes.o
 
 run: client
-	./client $(KEY) $(IV) plaintext output.txt
+	./client $(KEY) $(IV) ../unix/plaintext output.txt
 
 clean:
 	rm -r ./*.o
