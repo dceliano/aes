@@ -10,7 +10,7 @@ import datetime
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(('bognor.sm', 2002))
+s.connect(('bognor.sm.cl.cam.ac.uk', 2002))
 
 print datetime.datetime.now() #Used to correlate power measurements with AES execution time
 
