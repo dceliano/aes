@@ -79,8 +79,9 @@ static void encode(AESContext *ctx, uint8_t *buf, size_t length)
 
   if (length == 0) {
     return;
-  } 
- 
+  }
+  
+  //Function begins to be different than the Unix version (using accelerator instead of aes library call)
   noc_write(*((uint64_t *)(buf + 0)), 2);
   noc_write(*((uint64_t *)(buf + 8)), 2);
   for (size_t i = 16; i < length; i += 16) {
@@ -105,12 +106,11 @@ static int control(int cmd)
 
 int main(int argc, char **argv)
 {
+  //same as unix version
   if (argc < 4 || strlen(argv[1]) != 32 || strlen(argv[2]) != 32) {
     fprintf(stderr, "Usage: %s {key} {iv} {in}\n", argc == 1 ? argv[0] : "aes");
     return EXIT_FAILURE;
   }
-
-  // Parse the 128-bit encryption key and the IV.
   uint8_t key[16];
   if (!AES_parse_key(argv[1], key)) {
     fprintf(stderr, "Invalid key: %s\n", argv[1]);
@@ -128,23 +128,18 @@ int main(int argc, char **argv)
     perror("Cannot open /dev/mem");
     return EXIT_FAILURE;  
   } 
-
   MEM = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, fd, PIO_BASE);
   if (MEM == MAP_FAILED) {
     perror("Cannot map /dev/mem");
     return EXIT_FAILURE;
   }
 
-  // Set up the AES context.
-  AESContext ctx;
-  AES_init_ctx_iv(&ctx, key, iv);
-
   // Reset the accelerator and the NoC FIFO.
   control(0x02);
   usleep(1000);
   control(0x10);
   
-  // Transfer the RK and IV.
+  // Transfer the RK and IV to the accelerator.
   for (int i = 0; i < 176; i += 8) {
     noc_write(*(uint64_t*)(ctx.RoundKey + i), 0);
   }
@@ -152,7 +147,7 @@ int main(int argc, char **argv)
     noc_write(*(uint64_t*)(ctx.Iv + i), 1);
   }
 
-  // Load the input data.
+  //same as in unix version for the rest of file
   uint8_t *data;
   off_t length;
   size_t padded;
@@ -178,40 +173,30 @@ int main(int argc, char **argv)
   
     close(fd);
   }
-  
   time_t t;
   struct tm *tm;
   
-
   sleep(3);
   t = time(NULL);
   tm = localtime(&t);
   printf("%02d:%02d:%02d ", tm->tm_hour, tm->tm_min, tm->tm_sec);
   
-  // Same as in the unix version. 
   double dt;
-  {
-    const clock_t start = clock();
-    encode(&ctx, data, length);
-    const clock_t end = clock();
-  
-    dt = (double)(end - start) / CLOCKS_PER_SEC;
-  }
+  const clock_t start = clock();
+  encode(&ctx, data, length);
+  const clock_t end = clock();
+  dt = (double)(end - start) / CLOCKS_PER_SEC;
 
-  
   t = time(NULL);
   tm = localtime(&t);
   printf("%02d:%02d:%02d %f\n", tm->tm_hour, tm->tm_min, tm->tm_sec, dt);
-  sleep(3);
 
-  // Write the output, if there's a file name specified.
   if (argc >= 5) {
     int fd = open(argv[4], O_WRONLY | O_CREAT, 0666);
     if (fd < 0) {
       perror("Cannot open output file.");
       return EXIT_FAILURE;
     }
-
     if (write(fd, data, padded) != padded) {
       perror("Cannot write output.");
       return EXIT_FAILURE;
