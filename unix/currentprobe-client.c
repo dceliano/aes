@@ -72,15 +72,17 @@ int currentprobe_operate(int *energies, const char *hostname)
 
   char dir[MESSAGESIZE];
 
+printf("about to receive.\n");
   /* wait for a message to come back from the server */
-  if (recv(sd, dir, MESSAGESIZE, 0) == -1) {
+  if (recv(sd, dir, MESSAGESIZE*sizeof(char), 0) == -1) {
     perror("recv");
     return -1;
   }
 else{
-	printf("Received a msg from the server.");
+	printf("Received a msg from the server: %s\n", dir);
 }
 
+printf("about to parse.\n");
   // parse result to millijoules - total and core energies in use.
   int c = sscanf(dir, "ENERGY=%i!%i|", &energies[0], &energies[1]);
   printf("'%s'  c=%i  e=%i mJ (core %i mJ)\n", dir, c, energies[0], energies[1]);
