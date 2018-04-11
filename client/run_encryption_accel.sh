@@ -9,7 +9,9 @@ INPUT=plaintext
 OUTPUT=output.txt
 ITERS=5
 
-function runiters {
+function runiters() {
+	echo "Running iterations on new configuration."
+	echo $1
 	for ((i = 0; i < $ITERS; ++i)) do
 		./client $KEY $IV $INPUT $OUTPUT >> $1
 	done
