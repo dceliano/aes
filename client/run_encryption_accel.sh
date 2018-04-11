@@ -5,7 +5,7 @@
 
 KEY=00112233445566778899aabbccddeeff
 IV=00112233445566778899aabbccddeeff
-INPUT=plaintext
+INPUT=../unix/plaintext
 OUTPUT=output.txt
 ITERS=5
 
