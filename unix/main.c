@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 
 #include "aes.h"
+#include "currentprobe-client.h"
 
 
 
@@ -94,17 +95,13 @@ int main(int argc, char **argv)
     close(fd);
   }
 
-  time_t t;
-  struct tm *tm;
-  
-  sleep(3); //wait a bit and idle in order to get more stable power measurements.
-  t = time(NULL);
-  tm = localtime(&t); //used to correlate timings with power samples from Bognor
-  printf("%02d:%02d:%02d ", tm->tm_hour, tm->tm_min, tm->tm_sec);
+  double dt;
+  int *energies;
+  currentprobe_open(gethostbyname("bognor.sm"), "bognor.sm");
+  //currentprobe_operate(energies, "bognor.sm");  
+  sleep(3); //wait a bit and idle in order to get more stable energy measurements.
   
   // Encrypt in the timed portion.
-  double dt;
-
   //The clock() function determines the amount of processor time used since the invocation of the calling process, measured in CLOCKS_PER_SECs of a second
   const clock_t start = clock();
   encode(&ctx, data, length); //perform the encryption
@@ -112,9 +109,6 @@ int main(int argc, char **argv)
 
   dt = (double)(end - start) / CLOCKS_PER_SEC;
   
-  t = time(NULL);
-  tm = localtime(&t);
-  printf("%02d:%02d:%02d %f\n", tm->tm_hour, tm->tm_min, tm->tm_sec, dt);
 
   // Write the output, if there's a file name specified.
   if (argc >= 5) {
