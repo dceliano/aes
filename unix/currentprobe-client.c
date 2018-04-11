@@ -45,7 +45,7 @@ int currentprobe_open(const char *hostname)
       return -1;
     }
   else{
-	printf("Successfully connected to %s\n", hostname);
+	//printf("Successfully connected to %s\n", hostname);
   }
   return rc;
 }
@@ -67,25 +67,25 @@ int currentprobe_operate(int *energies, const char *hostname)
     return -1;
   }
   else{
-	printf("sent a cmd to the server.\n");
+	//printf("sent a cmd to the server.\n");
   }
 
   char dir[MESSAGESIZE];
 
-printf("about to receive.\n");
+//printf("about to receive.\n");
   /* wait for a message to come back from the server */
   if (recv(sd, dir, MESSAGESIZE*sizeof(char), 0) == -1) {
     perror("recv");
     return -1;
   }
 else{
-	printf("Received a msg from the server: %s\n", dir);
+	//printf("%s", dir);
 }
 
-printf("about to parse.\n");
+//printf("about to parse.\n");
   // parse result to millijoules - total and core energies in use.
   int c = sscanf(dir, "ENERGY=%i!%i|", &energies[0], &energies[1]);
-  printf("'%s'  c=%i  e=%i mJ (core %i mJ)\n", dir, c, energies[0], energies[1]);
+  //printf("'%s'  c=%i  e=%i mJ (core %i mJ)\n", dir, c, energies[0], energies[1]);
   if (c == 2) rc = 0;
   return rc;
 }

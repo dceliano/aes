@@ -96,8 +96,9 @@ int main(int argc, char **argv)
   }
 
   double dt;
-  int *energies;
-  currentprobe_operate(energies, "bognor.sm");  
+  int energies[2];
+  currentprobe_operate(energies, "bognor.sm");
+  int initial_1v_energy = energies [1]; 
   sleep(3); //wait a bit and idle in order to get more stable energy measurements.
   
   // Encrypt in the timed portion.
@@ -107,7 +108,12 @@ int main(int argc, char **argv)
   const clock_t end = clock();
 
   dt = (double)(end - start) / CLOCKS_PER_SEC;
-  
+
+  currentprobe_operate(energies, "bognor.sm");
+  int final_1v_energy = energies [1];  
+  int energy_used = final_1v_energy - initial_1v_energy;
+
+  printf("energy used: %dmJ\n", energy_used);
 
   // Write the output, if there's a file name specified.
   if (argc >= 5) {
