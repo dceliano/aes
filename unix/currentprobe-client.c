@@ -60,10 +60,14 @@ int currentprobe_operate(int *energies, const char *hostname)
 
   int rc = -1;
   const char *cmd = "cmd\n";
+	//printf("Reached here.\n");
   /* send a message to the server PORT on machine HOST */
   if (sd < 0 || send(sd, cmd, strlen(cmd), 0) == -1) {
     perror("send");
     return -1;
+  }
+  else{
+	printf("sent a cmd to the server.\n");
   }
 
   char dir[MESSAGESIZE];
@@ -73,6 +77,9 @@ int currentprobe_operate(int *energies, const char *hostname)
     perror("recv");
     return -1;
   }
+else{
+	printf("Received a msg from the server.");
+}
 
   // parse result to millijoules - total and core energies in use.
   int c = sscanf(dir, "ENERGY=%i!%i|", &energies[0], &energies[1]);
@@ -80,6 +87,7 @@ int currentprobe_operate(int *energies, const char *hostname)
   if (c == 2) rc = 0;
   return rc;
 }
+
 
 // eof
  
