@@ -132,7 +132,24 @@ stats
 Contains code to collect timing and energy statistics. Also contains example timing and energy logs from Nandor and Dom.
 
 ## Silicon
-Because energy and timing measurements are taken from two separate machines (the parallela card and bognor), things get complicated quite quickly. Time-of-day timestamps are used to get rid of energy measurements which don't take place during encryption. The typical amount of power which the parallela in FN12 uses in 100ms is about 32mJ.
+Whenever the encryption code is run, initial and final time-stamps/energy-stamps are taken and printed. These outputs should be piped into an output file named according to the configuration. 5 trials for each configuration should be run. The files should be named: *output_[CPU freq]_[FPGA_freq].txt* where FPGA_freq is 0 if we are running in unaccelerated mode. This would create the following output files:
+
+	output_666_0.csv
+	output_333_0.csv
+	output_166_0.csv
+	output_666_250.csv
+	output_333_250.csv
+	output_166_250.csv
+	output_666_100.csv
+	output_333_100.csv
+	output_166_100.csv
+
+These files will be produced by running *run_encryption_accel.sh* and *run_encryption_unaccel.sh*, which run the trials and produce the outputs automatically.
+
+Measurements must also be taken to see how much power the silicon uses when it is not running encryption. This power will be an average based on the amount of energy measured a period of 60 seconds. The numbers will then be divided to find the average power of the idle Parallela board. This power will be compared to the power measured on the Parallela board.
+
+###Old energy measuring method (no longer being used, only here for historical purposes)
+Energy and timing measurements were taken from two separate files, making things complicated quite quickly. Time-of-day timestamps are used to get rid of energy measurements which don't take place during encryption. The typical amount of power which the parallela in FN12 uses in 100ms is about 32mJ.
 
 *energy.py* collects energy information from the Parallela card running in FN12 (parcard-djg1.sm) over Telnet. It should be started just before you start executing the encryption code on the Parallela and stopped shortly after your code is finished executing (using Ctrl C). The *energy.py* output should be piped into a file *energy_%_$.log* where *%* is the ARM CPU frequency in MHz and $ is the frequency of the FPGA in MHz, 0 if unaccelerated. i.e. *energy_666_0.log* is for an ARM CPU of 666MHz without acceleration.
 

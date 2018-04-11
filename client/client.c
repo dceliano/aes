@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 
 #include "aes.h"
+#include "../unix/currentprobe-client.h"
 
 #define PIO_BASE 0x43c00000
 
@@ -173,23 +174,24 @@ int main(int argc, char **argv)
   
     close(fd);
   }
-  time_t t;
-  struct tm *tm;
-  
-  sleep(3);
-  t = time(NULL);
-  tm = localtime(&t);
-  printf("%02d:%02d:%02d ", tm->tm_hour, tm->tm_min, tm->tm_sec);
   
   double dt;
+  int energies[2];
+  currentprobe_operate(energies, "bognor.sm");
+  int initial_1v_energy = energies [1]; 
+  sleep(3); //wait a bit and idle in order to get more stable energy measurements.
+  
   const clock_t start = clock();
   encode(&ctx, data, length);
   const clock_t end = clock();
+
   dt = (double)(end - start) / CLOCKS_PER_SEC;
 
-  t = time(NULL);
-  tm = localtime(&t);
-  printf("%02d:%02d:%02d %f\n", tm->tm_hour, tm->tm_min, tm->tm_sec, dt);
+  currentprobe_operate(energies, "bognor.sm");
+  int final_1v_energy = energies [1];  
+  int energy_used = final_1v_energy - initial_1v_energy;
+
+  printf("%f,%d\n", dt, energy_used);
 
   if (argc >= 5) {
     int fd = open(argv[4], O_WRONLY | O_CREAT, 0666);
