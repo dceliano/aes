@@ -15,14 +15,20 @@ static struct sockaddr_in sin;
 static struct sockaddr_in pin;
 static int sd = -1;
 
-int currentprobe_open(struct hostent *hp, const char *hostname)
+int currentprobe_open(const char *hostname)
 {
   int rc = 0;
 
   /* fill in the socket structure with host information */
+  struct hostent *hp = gethostbyname(hostname);
+  if (!hp)
+  {
+  	perror("Unable to find that host. Code:");
+  	exit(1);
+  }
   memset(&pin, 0, sizeof(pin));
   pin.sin_family = AF_INET;
-  pin.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
+  pin.sin_addr.s_addr = ((struct in_addr *)((hp->h_addr_list)[0]))->s_addr;
   pin.sin_port = htons(PORT);
 
   /* grab an Internet domain socket */
@@ -32,12 +38,15 @@ int currentprobe_open(struct hostent *hp, const char *hostname)
   }
 
   /* connect to PORT on HOST */
-  if (connect(sd,(struct sockaddr *)  &pin, sizeof(pin)) == -1) 
+  if (connect(sd,(struct sockaddr *) &pin, sizeof(pin)) == -1)
     {
       printf("Failed to connect to %s\n", hostname);
       perror("currentprobe connect");
       return -1;
     }
+  else{
+	printf("Successfully connected to %s\n", hostname);
+  }
   return rc;
 }
 
@@ -46,13 +55,7 @@ int currentprobe_operate(int *energies, const char *hostname)
 {
   if (sd < 0 && hostname)
     {
-      struct hostent *hp = gethostbyname(hostname);
-      if (!hp)
-	{
-	  perror("currentprobe_operate: gethostbyname");
-	  exit(1);
-	}
-      currentprobe_open(hp, hostname);
+      currentprobe_open(hostname);
     }
 
   int rc = -1;

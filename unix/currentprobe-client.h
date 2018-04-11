@@ -12,7 +12,7 @@
 
 #define N_ENERGIES  1
 
-extern int currentprobe_open(struct hostent *hp, const char *hostname);
+extern int currentprobe_open(const char *hostname);
 extern int currentprobe_operate(int *energies, const char *hostname);
 
 #endif

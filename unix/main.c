@@ -97,8 +97,7 @@ int main(int argc, char **argv)
 
   double dt;
   int *energies;
-  currentprobe_open(gethostbyname("bognor.sm"), "bognor.sm");
-  //currentprobe_operate(energies, "bognor.sm");  
+  currentprobe_operate(energies, "bognor.sm");  
   sleep(3); //wait a bit and idle in order to get more stable energy measurements.
   
   // Encrypt in the timed portion.
