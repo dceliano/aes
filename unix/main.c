@@ -113,7 +113,7 @@ int main(int argc, char **argv)
   int final_1v_energy = energies [1];  
   int energy_used = final_1v_energy - initial_1v_energy;
 
-  printf("energy used: %dmJ\n", energy_used);
+  printf("%f,%d\n", dt, energy_used);
 
   // Write the output, if there's a file name specified.
   if (argc >= 5) {
