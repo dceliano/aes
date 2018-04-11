@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Runs 5 accelerated trials of AES encryption on the Parallela card for each of several different modes.
 # (different FPGA and CPU frequencies)
 # Make sure the bitfile is loaded into the board.

@@ -134,6 +134,9 @@ int main(int argc, char **argv)
     perror("Cannot map /dev/mem");
     return EXIT_FAILURE;
   }
+  // Set up the AES context.
+  AESContext ctx;
+  AES_init_ctx_iv(&ctx, key, iv);
 
   // Reset the accelerator and the NoC FIFO.
   control(0x02);

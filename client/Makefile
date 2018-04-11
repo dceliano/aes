@@ -15,8 +15,8 @@ client.o: client.c
 aes.o: ../unix/aes.c
 	$(CC) $(CFLAGS) -c ../unix/aes.c -o aes.o
 
-currentprobe-client.o: currentprobe-client.c currentprobe-client.h
-	$(CC) -c $(CFLAGS) -o currentprobe-client.o currentprobe-client.c
+currentprobe-client.o: ../unix/currentprobe-client.c
+	$(CC) -c $(CFLAGS) -o currentprobe-client.o ../unix/currentprobe-client.c
 
 run: client
 	./client $(KEY) $(IV) ../unix/plaintext output.txt
