@@ -146,6 +146,8 @@ Whenever the encryption code is run, initial and final time-stamps/energy-stamps
 
 These files will be produced by running *run_encryption_accel.sh* and *run_encryption_unaccel.sh*, which run the trials and produce the outputs automatically.
 
+NOTE: Not everything can be done automatically. Whenever you change the CPU frequency, the whole card needs to be restarted because the CPU clock is used to keep time, and if you change it you need to reset the card.
+
 Measurements must also be taken to see how much power the silicon uses when it is not running encryption. This power will be an average based on the amount of energy measured a period of 60 seconds. The numbers will then be divided to find the average power of the idle Parallela board. This power will be compared to the power measured on the Parallela board.
 
 ###Old energy measuring method (no longer being used, only here for historical purposes)
@@ -190,7 +192,7 @@ In this case, 2 is the divisor, which must not be 0, 1 or 3. A value of 2 means 
 To change Prazor FPGA and CPU frequencies, pass in the frequencies as command line arguments. You must change src/vhls.cpp file (~line 235) to be able to do this.
 
 
-To reset the parcard
+To restart the parcard
 ======
 Log into bognor.sm and type the following as root:
 
