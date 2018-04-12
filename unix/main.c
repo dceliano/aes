@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 
 #include "aes.h"
 #include "currentprobe-client.h"
@@ -103,11 +104,19 @@ int main(int argc, char **argv)
   
   // Encrypt in the timed portion.
   //The clock() function determines the amount of processor time used since the invocation of the calling process, measured in CLOCKS_PER_SECs of a second
+  /*
   const clock_t start = clock();
   encode(&ctx, data, length); //perform the encryption
   const clock_t end = clock();
-
   dt = (double)(end - start) / CLOCKS_PER_SEC;
+  */
+  struct timeval  tv;
+  gettimeofday(&tv, NULL);
+  double begin = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000 ;
+  sleep(30);
+  gettimeofday(&tv, NULL);
+  double end = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000 ;
+  dt = (double)(end-begin) / 1000;
 
   currentprobe_operate(energies, "bognor.sm");
   int final_1v_energy = energies [1];  
