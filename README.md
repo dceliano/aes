@@ -148,9 +148,11 @@ These files will be produced by running *run_encryption_accel.sh* and *run_encry
 
 NOTE: Whenever you change the CPU frequency, the time will not adjust accordingly. For a CPU frequency of 333 MHz, all times should be multiplied by 2, and all multiplied by 4 for a CPU frequency of 166MHz.
 
-Addtionally, a "baseline" of running no code on the Parallela was taken for comparison (taking out the encryption and replacing it with a sleep() for 30 seconds and using getlocaltime() or something). Note that the baseline was run at a CPU frequency of  666MHz (although this shouldn't matter).
+Addtionally, a "baseline" of running no code on the Parallela was taken for comparison (taking out the encryption and replacing it with a sleep() for 30 seconds and using getlocaltime() or something). This was done for all three CPU frequencies.
 
-	output_0_0.csv
+	baseline_666.csv
+	baseline_333.csv
+	baseline_166.csv
 
 Measurements must also be taken to see how much power the silicon uses when it is not running encryption. This power will be an average based on the amount of energy measured a period of 60 seconds. The numbers will then be divided to find the average power of the idle Parallela board. This power will be compared to the power measured on the Parallela board.
 
