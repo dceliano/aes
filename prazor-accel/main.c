@@ -1,6 +1,7 @@
 #include "aes.h"
 #include "prstdio.h"
 
+typedef unsigned long long uint64_t;
 
 
 volatile uint32_t *PIO_SERIAL = (uint32_t*)(0xF8006000 + 8 *  0);
